@@ -76,6 +76,7 @@ def get_events(year, month, day1, day2):
     url = '{}mp_index.php?dzial=3&action=1&grp=13' \
           '&czasr1={}&czasm1={}&dzienp1={}&dzienk1={}' \
           .format(BASE_URL, year, MONTHS_PL[month], day1, day2)
+    print(url)
     filename, headers = urlretrieve(url)
 
     with open(filename, encoding='iso-8859-2') as f:
