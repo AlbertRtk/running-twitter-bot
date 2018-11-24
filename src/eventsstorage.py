@@ -1,3 +1,6 @@
+""" 2018 by Albert Ratajczak
+    EventsStorage - class with storage (database) for Event instances
+"""
 from sqlite3 import connect
 from event import Event
 
@@ -7,11 +10,11 @@ class EventsStorage:
         self.connection = connect(db_file)
         self.cursor = self.connection.cursor()
         self.cursor.execute('''CREATE TABLE IF NOT EXISTS races (
-                               name TEXT UNIQUE,
+                               name TEXT,
                                date TEXT,
                                place TEXT,
                                distance TEXT,
-                               url TEXT
+                               url TEXT UNIQUE
                                )'''
                             )
 
@@ -31,19 +34,25 @@ class EventsStorage:
                                    VALUES (?, ?, ?, ?, ?)''', insert)
         self.connection.commit()
 
-    def read(self):
+    def read(self, event_date=None):
         print('Selecting events from database')
-        self.cursor.execute('''SELECT name, date, place, distance, url
-                               FROM races''')
+        if event_date is None:
+            self.cursor.execute('''SELECT name, date, place, distance, url
+                                   FROM races''')
+        else:
+            dmy = '{}.{}.{}'.format(event_date.day, event_date.month,
+                                    event_date.year)
+            self.cursor.execute('''SELECT name, date, place, distance, url
+                                   FROM races WHERE date=?''', (dmy, ))
         table = self.cursor.fetchall()
         events = []
         for row in table:
             events.append(Event(row[0], row[1], row[2], row[3], row[4]))
         return events
 
-    def remove(self, name):
-        print('Removing event from database: ' + name)
-        self.cursor.execute('DELETE FROM races WHERE name=?', (name, ))
+    def remove(self, event):
+        print('Removing event from database: ' + event.name)
+        self.cursor.execute('DELETE FROM races WHERE url=?', (event.url, ))
         self.connection.commit()
 
 

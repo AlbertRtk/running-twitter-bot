@@ -1,8 +1,9 @@
-""" 2018-11-18 by AR
-    getevents - scraping of running events info from maratonypolskie.pl
+""" 2018 by Albert Ratajczak
+    Event - class with info about running event/race + functions
 """
 from urllib.request import urlretrieve
-from datetime import date
+from datetime import date, timedelta
+from calendar import monthrange
 import re
 
 
@@ -53,8 +54,8 @@ class Event:
         self.url = url
 
     def __str__(self):
-        return '{} ({}, {}): {}\nURL: {}'.format(self.name, self.place, self.date,
-                                              self.distance, self.url)
+        return '{} ({}, {}): {}'.format(self.name, self.place, self.date,
+                                        self.distance)
 
     def to_dict(self):
         return self.__dict__
@@ -72,11 +73,10 @@ def get_events(year, month, day1, day2):
     :return: list of instances of class Event with info about events within one
     calendar month from day1 to day2
     """
-    print('Getting events from URL')
     url = '{}mp_index.php?dzial=3&action=1&grp=13' \
           '&czasr1={}&czasm1={}&dzienp1={}&dzienk1={}' \
           .format(BASE_URL, year, MONTHS_PL[month], day1, day2)
-    print(url)
+    print('Getting events from URL: {}'.format(url))
     filename, headers = urlretrieve(url)
 
     with open(filename, encoding='iso-8859-2') as f:
@@ -121,6 +121,29 @@ def get_events(year, month, day1, day2):
     return list_of_events
 
 
+def get_events_2(from_day, days):
+    """
+    :param from_day:
+    :param days:
+    :return:
+    """
+    left_days = days - 1
+    events = []
+    month_end = monthrange(from_day.year, from_day.month)[1]
+
+    if month_end < from_day.day + left_days:
+        till_day = date(from_day.year, from_day.month, month_end)
+        left_days -= (month_end-from_day.day)
+        events += get_events_2(till_day+timedelta(days=1), left_days)
+    else:
+        till_day = from_day + timedelta(days=left_days)
+
+    print('Getting events from {} until {}'.format(from_day, till_day))
+    events += get_events(from_day.year, from_day.month,
+                         from_day.day, till_day.day)
+    return events
+
+
 if __name__ == '__main__':
     print('Running event.py \n')
     td = date.today()
@@ -129,5 +152,3 @@ if __name__ == '__main__':
 
     for e in events:
         print(e)
-
-# EOF
