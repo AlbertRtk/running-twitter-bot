@@ -1,6 +1,6 @@
 # Running Twitter Bot 
-### !!! UNDER DEVELOPMENT !!!) 
-
+### !!! UNDER DEVELOPMENT !!!
+###
 
 Bot informing about upcomming running events in Poland.
 
