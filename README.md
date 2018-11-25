@@ -1,6 +1,7 @@
 # Running Twitter Bot 
-### ![#f03c15] (!!! UNDER DEVELOPMENT !!!) '#f03c15'
-
+'''diff
+- !!! UNDER DEVELOPMENT !!!) 
+'''
 
 Bot informing about upcomming running events in Poland.
 
