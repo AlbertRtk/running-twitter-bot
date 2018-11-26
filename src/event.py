@@ -4,6 +4,7 @@
 from urllib.request import urlretrieve
 from datetime import date, timedelta
 from calendar import monthrange
+from datetime_functions import date_with_dots
 import re
 
 
@@ -47,6 +48,7 @@ RE_URL = '(?<=href=\')[^\']*'
 
 class Event:
     def __init__(self, name, date=None, place=None, distance=None, url=None):
+        # TODO: TypeErrors
         self.name = name
         self.date = date
         self.place = place
@@ -54,14 +56,15 @@ class Event:
         self.url = url
 
     def __str__(self):
-        return '{} ({}, {}): {}'.format(self.name, self.place, self.date,
+        return '{} ({}, {}): {}'.format(self.name, self.place,
+                                        date_with_dots(self.date),
                                         self.distance)
 
     def to_dict(self):
         return self.__dict__
 
     def to_tuple(self):
-        return self.name, self.date, self.place, self.distance, self.url
+        return self.name, str(self.date), self.place, self.distance, self.url
 
 
 def get_events(year, month, day1, day2):
@@ -85,8 +88,8 @@ def get_events(year, month, day1, day2):
     list_of_events = []
 
     for day in range(day1, day2+1):
-        day_date = '{}.{}.{}'.format(day, month, year)
-        date_pattern = '>' + day_date
+        day_date = date(year, month, day)
+        date_pattern = '>' + date_with_dots(day_date)
         date_iter = re.finditer(date_pattern, html_code)
 
         # Borders to cut out short str (used for data scraping) from HTML code

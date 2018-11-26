@@ -8,11 +8,11 @@ from eventsstorage import EventsStorage
 def main():
     today_date = date.today()
     storage = EventsStorage('events.db')
-    todays_events = storage.read(today_date)
+    todays_events = storage.read(date(2018,12,2))
 
-    if today_date.isoweekday() == 7:
-        new_events = get_events_2(today_date+timedelta(days=1), 7)
-        storage.store(new_events)
+    # if True:  #today_date.isoweekday() == 7:
+    #     new_events = get_events_2(today_date+timedelta(days=1), 7)
+    #     storage.store(new_events)
 
     for e in todays_events:
         print(e)

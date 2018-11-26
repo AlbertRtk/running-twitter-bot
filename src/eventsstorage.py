@@ -3,6 +3,8 @@
 """
 from sqlite3 import connect
 from event import Event
+from datetime_functions import date_with_dots
+from datetime import datetime
 
 
 class EventsStorage:
@@ -40,14 +42,13 @@ class EventsStorage:
             self.cursor.execute('''SELECT name, date, place, distance, url
                                    FROM races''')
         else:
-            dmy = '{}.{}.{}'.format(event_date.day, event_date.month,
-                                    event_date.year)
             self.cursor.execute('''SELECT name, date, place, distance, url
-                                   FROM races WHERE date=?''', (dmy, ))
+                                   FROM races WHERE date=?''', (event_date, ))
         table = self.cursor.fetchall()
         events = []
         for row in table:
-            events.append(Event(row[0], row[1], row[2], row[3], row[4]))
+            events.append(Event(row[0], datetime.strptime(row[1], '%Y-%m-%d'),
+                                row[2], row[3], row[4]))
         return events
 
     def remove(self, event):
