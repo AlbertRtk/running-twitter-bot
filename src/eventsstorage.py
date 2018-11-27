@@ -2,9 +2,9 @@
     EventsStorage - class with storage (database) for Event instances
 """
 from sqlite3 import connect
+from datetime import datetime
 from event import Event
 from datetime_functions import date_with_dots
-from datetime import datetime
 
 
 class EventsStorage:

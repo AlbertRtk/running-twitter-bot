@@ -4,8 +4,8 @@
 from urllib.request import urlretrieve
 from datetime import date, timedelta
 from calendar import monthrange
+from re import finditer, search
 from datetime_functions import date_with_dots
-import re
 
 
 BASE_URL = 'https://www.maratonypolskie.pl/'
@@ -90,7 +90,7 @@ def get_events(year, month, day1, day2):
     for day in range(day1, day2+1):
         day_date = date(year, month, day)
         date_pattern = '>' + date_with_dots(day_date)
-        date_iter = re.finditer(date_pattern, html_code)
+        date_iter = finditer(date_pattern, html_code)
 
         # Borders to cut out short str (used for data scraping) from HTML code
         spans = []
@@ -106,14 +106,14 @@ def get_events(year, month, day1, day2):
 
             # Scraping info about event
             try:
-                place_and_distance = re.search(RE_PLACE_DISTANCE, html_span)
+                place_and_distance = search(RE_PLACE_DISTANCE, html_span)
                 place_and_distance = place_and_distance.group()
                 place, distance = place_and_distance.split('<BR>')
 
-                event_name = re.search(RE_EVENT_NAME, html_span)
+                event_name = search(RE_EVENT_NAME, html_span)
                 event_name = event_name.group().replace('<BR>', ' ')
 
-                event_url = re.search(RE_URL, html_span).group()
+                event_url = search(RE_URL, html_span).group()
                 event_url = BASE_URL + event_url
 
                 list_of_events.append(Event(event_name, day_date, place,
