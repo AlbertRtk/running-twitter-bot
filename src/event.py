@@ -8,6 +8,7 @@ from re import finditer, search
 from datetime_functions import date_with_dots
 
 
+# Webpage to scrape data from
 BASE_URL = 'https://www.maratonypolskie.pl/'
 
 MONTHS_PL = {1: 'styczen',
@@ -24,6 +25,7 @@ MONTHS_PL = {1: 'styczen',
              12: 'grudzien',
              }
 
+# Patterns used to localize relevant information in HTML code
 RE_PLACE_DISTANCE = '[\w\s\.]+<BR>[\w\.,\s]+'
 """
 [\w\s\.]+  --> matches name of place including form: Modlin k.Warszawy
@@ -47,6 +49,9 @@ RE_URL = '(?<=href=\')[^\']*'
 
 
 class Event:
+    """
+    Class with information about events: name, date, place, distance(s) and URL
+    """
     def __init__(self, name, date=None, place=None, distance=None, url=None):
         # TODO: TypeErrors
         self.name = name
@@ -69,6 +74,8 @@ class Event:
 
 def get_events(year, month, day1, day2):
     """
+    Scraps info about events between given days in one month (only)
+
     :param year: year
     :param month: month
     :param day1: starting day
@@ -76,12 +83,14 @@ def get_events(year, month, day1, day2):
     :return: list of instances of class Event with info about events within one
     calendar month from day1 to day2
     """
+    # Setting URL and downloading HTML code
     url = '{}mp_index.php?dzial=3&action=1&grp=13' \
           '&czasr1={}&czasm1={}&dzienp1={}&dzienk1={}' \
           .format(BASE_URL, year, MONTHS_PL[month], day1, day2)
     print('Getting events from URL: {}'.format(url))
     filename, headers = urlretrieve(url)
 
+    # Reading HTML code
     with open(filename, encoding='iso-8859-2') as f:
         html_code = f.read()
 
@@ -89,10 +98,16 @@ def get_events(year, month, day1, day2):
 
     for day in range(day1, day2+1):
         day_date = date(year, month, day)
+        # Info about events is presented on the page in a table
+        # First column is date, so we searching for pattern '>dd.mm.yyyy'
         date_pattern = '>' + date_with_dots(day_date)
+        # Many events can have the same day, so we use finditer to find all
         date_iter = finditer(date_pattern, html_code)
 
         # Borders to cut out short str (used for data scraping) from HTML code
+        # Each date fitting date_pattern is in first column, so it's new row and
+        # info about next event. At the same time each date (except first and
+        # last) is endpoint for info about previuos event
         spans = []
         for di in date_iter:
             spans.append(di.span()[0])
@@ -104,7 +119,7 @@ def get_events(year, month, day1, day2):
             except IndexError:
                 html_span = html_code[span:span+500]
 
-            # Scraping info about event
+            # Scraping info about event and appending Event instance to list
             try:
                 place_and_distance = search(RE_PLACE_DISTANCE, html_span)
                 place_and_distance = place_and_distance.group()
@@ -126,21 +141,34 @@ def get_events(year, month, day1, day2):
 
 def get_events_2(from_day, days):
     """
-    :param from_day:
-    :param days:
-    :return:
+    Uses get_events to get info about events from 'from_day' for next 'days'
+    days (including 'from_day'). Unlike get_events, get_events_2 is not limited
+    to one month. It manages change of month and or year.
+
+    :param from_day: datetime.date instance, begining of time period
+    :param days: datetime.date instance, end of time periot
+    :return: list of instances of class Event with info about events
     """
+    # Days left to search for events (except from_day)
     left_days = days - 1
-    events = []
+
+    # Number of days in month
     month_end = monthrange(from_day.year, from_day.month)[1]
 
+    events = []
+
     if month_end < from_day.day + left_days:
+        # End of callendar month: end of time period in new month
+        # till_day (day2 from func get_events) is last day of month
         till_day = date(from_day.year, from_day.month, month_end)
         left_days -= (month_end-from_day.day)
+        # Recursion to search events in next month
         events += get_events_2(till_day+timedelta(days=1), left_days)
     else:
+        # Time period within one calendar month
         till_day = from_day + timedelta(days=left_days)
 
+    # Calling get_events to search and scrape information
     print('Getting events from {} until {}'.format(from_day, till_day))
     events += get_events(from_day.year, from_day.month,
                          from_day.day, till_day.day)

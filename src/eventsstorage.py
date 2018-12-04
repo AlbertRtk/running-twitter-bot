@@ -8,6 +8,10 @@ from datetime_functions import date_with_dots
 
 
 class EventsStorage:
+    """
+    Creates database with table 'races' to store info about events.
+    Manages and stores class Event instances
+    """
     def __init__(self, db_file):
         self.connection = connect(db_file)
         self.cursor = self.connection.cursor()
@@ -26,7 +30,10 @@ class EventsStorage:
 
     def store(self, events):
         """
+        Inserts events into table 'races' in database
+
         :param events: list of class Event instances
+        :return: None
         """
         print('Inserting events into database')
         insert = []
@@ -37,6 +44,13 @@ class EventsStorage:
         self.connection.commit()
 
     def read(self, event_date=None):
+        """
+        Selects events with date equals to event_date. If event_date is not
+        given, selects all events from the table 'races'
+
+        :param event_date: datetime.date instace
+        :return: list of class Event instances
+        """
         print('Selecting events from database')
         if event_date is None:
             self.cursor.execute('''SELECT name, date, place, distance, url
@@ -52,6 +66,12 @@ class EventsStorage:
         return events
 
     def remove(self, event):
+        """
+        Removes event from table 'races' in database
+
+        :param event: class Event instace, to remove
+        :return: None
+        """
         print('Removing event from database: ' + event.name)
         self.cursor.execute('DELETE FROM races WHERE url=?', (event.url, ))
         self.connection.commit()
