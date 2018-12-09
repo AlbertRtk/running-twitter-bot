@@ -62,15 +62,15 @@ def main():
         events_to_tweet += saturday_events + sunday_events
 
     # Checking number of Tweets (events) for today
-    number_of_teets = len(events_to_tweet)
+    number_of_tweets = len(events_to_tweet)
 
     # Calculating the time period (in seconds, at least 60 s) between Tweets
     # (assuming that last Tweet will be posted around 8 pm)
-    sleep_time = int(3600*(20-datetime.now().time().hour)/number_of_teets)
-    if sleep_time < 60: sleep_time = 60
+    sleep_time = int(3600*(20-datetime.now().time().hour)/number_of_tweets)
+    if sleep_time < 60: sleep_time = 6
     print('Time interval between Tweets: {}\n'.format(sleep_time))
 
-    while number_of_teets > 0:
+    while number_of_tweets > 0:
         # Creating a Tweet
         tweet_event = choice(events_to_tweet)
         tweet = create_tweet(tweet_event)
@@ -86,20 +86,21 @@ def main():
         storage.remove(tweet_event)
         number_of_tweets = len(events_to_tweet)
 
-        if number_of_teets:
+        if number_of_tweets:
             # Waiting sleep_time seconds before posting next Tweet
             next_tweet_time = datetime.now() + timedelta(seconds=sleep_time)
-            print('\nTweets to be published: {}.'.format(number_of_teets), end=' ')
+            print('\nTweets to be published: {}.'.format(number_of_tweets), end=' ')
             print('Next Tweet at: {0:%H}:{0:%M}:{0:%S}\n'.format(next_tweet_time))
             sleep(sleep_time)
 
 
 if __name__ == '__main__':
+    print('Starting bot\n')
     while True:
-        if 9 < datetime.now().hour < 19:
+        if 9 < datetime.now().hour < 20:
             print('It\' after 9 am, starting Tweeting\n')
             main()
-            print('='*80, end='\n'*2)
+            print('\n'+'='*80, end='\n'*2)
         else:
             print('Waiting until 9 am')
             sleep(3600)
