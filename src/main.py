@@ -70,7 +70,7 @@ def main():
     if sleep_time < 60: sleep_time = 60
     print('Time interval between Tweets: {}\n'.format(sleep_time))
 
-    while len(events_to_tweet) > 0:
+    while number_of_teets > 0:
         # Creating a Tweet
         tweet_event = choice(events_to_tweet)
         tweet = create_tweet(tweet_event)
@@ -84,16 +84,21 @@ def main():
         # Removing Tweeted event form the list
         events_to_tweet.remove(tweet_event)
         storage.remove(tweet_event)
+        number_of_tweets = len(events_to_tweet)
 
         # Waiting sleep_time seconds before posting next Tweet
         next_tweet_time = datetime.now() + timedelta(seconds=sleep_time)
-        print('\nNext Tweet at: {0:%H}:{0:%M}:{0:%S}\n'.format(next_tweet_time))
+        print('\nTweets to be published: {}.'.format(number_of_teets), end=' ')
+        print('Next Tweet at: {0:%H}:{0:%M}:{0:%S}\n'.format(next_tweet_time))
         sleep(sleep_time)
 
 
 if __name__ == '__main__':
     while True:
         if datetime.now().hour > 9:
+            print('It\' after 9 am, starting Tweeting')
             main()
+            print('='*80, end='\n'*2)
         else:
+            print('Waiting until 9 am')
             sleep(3600)
