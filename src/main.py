@@ -1,8 +1,9 @@
 """ 2018 by Albert Ratajczak
 """
 # General imports
-from datetime import date, timedelta
-from random import randint
+from datetime import datetime, date, timedelta
+from time import sleep
+from random import choice
 import tweepy
 
 # Local imports
@@ -35,45 +36,64 @@ tweet_templates = ['{}, {}, dnia {}, dystans: {}\n{}',
 
 
 def create_tweet(event):
-    tweet = tweet_templates[randint(0, len(tweet_templates)-1)]
+    tweet = choice(tweet_templates)
     return tweet.format(event.name, event.place, date_with_dots(event.date),
                         event.distance, event.url)
 
 
 def main():
-    # today_day = date(2018, 12, 3)  # for debugging
     today_date = date.today()
+    # today_day = date(2018, 12, 3)  # for debugging
 
-    # Updating database with events on Sunday
+    # On Sunday, updating database with events
     if today_date.isoweekday() == 7:
         new_events = get_events_2(today_date+timedelta(days=1), 7)
         storage.store(new_events)
 
     # Selecting tomorrows events from database
-    tweet_events = storage.read(today_date+timedelta(days=1))
+    events_to_tweet = storage.read(today_date+timedelta(days=1))
 
-    # From Sunday to Thursday selecting also events for nearest weekend
+    # From Sunday to Thursday selecting also few events for nearest weekend
     if today_date.isoweekday() not in (5, 6):
         saturday_events = storage.read(date_of_nearest(day=6))
         sunday_events = storage.read(date_of_nearest(day=7))
         saturday_events = saturday_events[:int(len(saturday_events)/7)]
         sunday_events = sunday_events[:int(len(sunday_events)/7)]
-        tweet_events += saturday_events + sunday_events
+        events_to_tweet += saturday_events + sunday_events
 
     # Checking number of Tweets (events) for today
-    number_of_teets = len(tweet_events)
+    number_of_teets = len(events_to_tweet)
 
-    # while today_date == date.today():
-    #     pass
+    # Calculating the time period (in seconds, at least 60 s) between Tweets
+    # (assuming that last Tweet will be posted around 8 pm)
+    sleep_time = int(3600*(20-datetime.now().time().hour)/number_of_teets)
+    if sleep_time < 60: sleep_time = 60
+    print('Time interval between Tweets: {}\n'.format(sleep_time))
 
-    for e in tweet_events:
-        tweet = create_tweet(e)
-        print('\nTweeting: \n' + tweet)
-        # twitter.update_status(tweet)
-        # storage.remove(e)
+    while len(events_to_tweet) > 0:
+        # Creating a Tweet
+        tweet_event = choice(events_to_tweet)
+        tweet = create_tweet(tweet_event)
+        print('='*80)
+        print('\n{0:%H}:{0:%M}:{0:%S}, Tweeting:'.format(datetime.now()))
+        print(tweet, end='\n'*2)
+
+        # Tweeting
+        twitter.update_status(tweet)
+
+        # Removing Tweeted event form the list
+        events_to_tweet.remove(tweet_event)
+        storage.remove(tweet_event)
+
+        # Waiting sleep_time seconds before posting next Tweet
+        next_tweet_time = datetime.now() + timedelta(seconds=sleep_time)
+        print('\nNext Tweet at: {0:%H}:{0:%M}:{0:%S}\n'.format(next_tweet_time))
+        sleep(sleep_time)
 
 
 if __name__ == '__main__':
-    # while True:
-    #     main()
-    main()
+    while True:
+        if datetime.now().hour > 9:
+            main()
+        else:
+            sleep(3600)
