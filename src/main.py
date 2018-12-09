@@ -65,8 +65,8 @@ def main():
     number_of_tweets = len(events_to_tweet)
 
     # Calculating the time period (in seconds, at least 60 s) between Tweets
-    # (assuming that last Tweet will be posted around 8 pm)
-    sleep_time = int(3600*(20-datetime.now().time().hour)/number_of_tweets)
+    # (assuming that last Tweet will be posted around 8-9 pm)
+    sleep_time = int(3600*(21-datetime.now().time().hour)/number_of_tweets)
     if sleep_time < 60: sleep_time = 6
     print('Time interval between Tweets: {}\n'.format(sleep_time))
 
@@ -97,10 +97,10 @@ def main():
 if __name__ == '__main__':
     print('Starting bot\n')
     while True:
-        if 9 < datetime.now().hour < 20:
-            print('It\' after 9 am, starting Tweeting\n')
+        if 8 < datetime.now().hour < 20:
+            print('It\' after 8 am, starting Tweeting\n')
             main()
             print('\n'+'='*80, end='\n'*2)
         else:
-            print('Waiting until 9 am')
+            print('Waiting until 8 am')
             sleep(3600)
