@@ -86,17 +86,18 @@ def main():
         storage.remove(tweet_event)
         number_of_tweets = len(events_to_tweet)
 
-        # Waiting sleep_time seconds before posting next Tweet
-        next_tweet_time = datetime.now() + timedelta(seconds=sleep_time)
-        print('\nTweets to be published: {}.'.format(number_of_teets), end=' ')
-        print('Next Tweet at: {0:%H}:{0:%M}:{0:%S}\n'.format(next_tweet_time))
-        sleep(sleep_time)
+        if number_of_teets:
+            # Waiting sleep_time seconds before posting next Tweet
+            next_tweet_time = datetime.now() + timedelta(seconds=sleep_time)
+            print('\nTweets to be published: {}.'.format(number_of_teets), end=' ')
+            print('Next Tweet at: {0:%H}:{0:%M}:{0:%S}\n'.format(next_tweet_time))
+            sleep(sleep_time)
 
 
 if __name__ == '__main__':
     while True:
-        if datetime.now().hour > 9:
-            print('It\' after 9 am, starting Tweeting')
+        if 9 < datetime.now().hour < 19:
+            print('It\' after 9 am, starting Tweeting\n')
             main()
             print('='*80, end='\n'*2)
         else:
