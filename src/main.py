@@ -4,6 +4,7 @@
 from datetime import datetime, date, timedelta
 from time import sleep
 from random import choice
+from urllib.error import URLError
 import tweepy
 
 # Local imports
@@ -47,16 +48,25 @@ def main():
 
     # On Sunday, updating database with events
     if today_date.isoweekday() == 7:
-        new_events = get_events_2(today_date+timedelta(days=1), 7)
-        storage.store(new_events)
+        update = 0
+        while update < 5:
+            try:
+                new_events = get_events_2(today_date+timedelta(days=8), 7)
+                storage.store(new_events)
+                break
+            except URLError:
+                print('URLError: URL is not available! Waiting one hour')
+                update += 1
+                sleep(3600)
 
-    # Selecting tomorrows events from database
-    events_to_tweet = storage.read(today_date+timedelta(days=1))
+    # Selecting from database events which are in 8 days
+    events_to_tweet = storage.read(today_date+timedelta(days=8))
+    # TODO: test Tweeting about events in one week in advance
 
-    # From Sunday to Thursday selecting also few events for nearest weekend
+    # From Sunday to Thursday selecting also few events for next weekend
     if today_date.isoweekday() not in (5, 6):
-        saturday_events = storage.read(date_of_nearest(day=6))
-        sunday_events = storage.read(date_of_nearest(day=7))
+        saturday_events = storage.read(date_of_nearest(day=6)+timedelta(days=7))
+        sunday_events = storage.read(date_of_nearest(day=7)+timedelta(days=7))
         saturday_events = saturday_events[:int(len(saturday_events)/7)]
         sunday_events = sunday_events[:int(len(sunday_events)/7)]
         events_to_tweet += saturday_events + sunday_events
@@ -72,7 +82,7 @@ def main():
         print('Time interval between Tweets: {}\n'.format(sleep_time))
     else:
         print('No Tweet to be published')
-        return None
+        return False
 
     while number_of_tweets:
         # Creating a Tweet
@@ -83,7 +93,7 @@ def main():
         print(tweet, end='\n'*2)
 
         # Tweeting
-        twitter.update_status(tweet)
+        #twitter.update_status(tweet)
 
         # Removing Tweeted event form the list
         events_to_tweet.remove(tweet_event)
@@ -102,9 +112,10 @@ if __name__ == '__main__':
     print('Starting bot\n')
     awaiting_tweets = True
     while True:
-        if 8 < datetime.now().hour < 20 and awaiting_tweets:
+        if 8 < datetime.now().hour < 21 and awaiting_tweets:
             print('It\'s after 8 am, starting Tweeting\n')
-            awaiting_tweets = main()
+            main()
+            awaiting_tweets = False
             print('\n'+'='*80, end='\n'*2)
         else:
             if datetime.now().hour > 20: awaiting_tweets = True
