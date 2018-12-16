@@ -64,13 +64,17 @@ def main():
     # Checking number of Tweets (events) for today
     number_of_tweets = len(events_to_tweet)
 
-    # Calculating the time period (in seconds, at least 60 s) between Tweets
-    # (assuming that last Tweet will be posted around 8-9 pm)
-    sleep_time = int(3600*(21-datetime.now().time().hour)/number_of_tweets)
-    if sleep_time < 60: sleep_time = 6
-    print('Time interval between Tweets: {}\n'.format(sleep_time))
+    if number_of_tweets:
+        # Calculating the time period (in seconds, at least 60 s) between Tweets
+        # (assuming that last Tweet will be posted around 8-9 pm)
+        sleep_time = int(3600*(21-datetime.now().time().hour)/number_of_tweets)
+        if sleep_time < 60: sleep_time = 60
+        print('Time interval between Tweets: {}\n'.format(sleep_time))
+    else:
+        print('No Tweet to be published')
+        return None
 
-    while number_of_tweets > 0:
+    while number_of_tweets:
         # Creating a Tweet
         tweet_event = choice(events_to_tweet)
         tweet = create_tweet(tweet_event)
@@ -96,11 +100,13 @@ def main():
 
 if __name__ == '__main__':
     print('Starting bot\n')
+    awaiting_tweets = True
     while True:
-        if 8 < datetime.now().hour < 20:
-            print('It\' after 8 am, starting Tweeting\n')
-            main()
+        if 8 < datetime.now().hour < 20 and awaiting_tweets:
+            print('It\'s after 8 am, starting Tweeting\n')
+            awaiting_tweets = main()
             print('\n'+'='*80, end='\n'*2)
         else:
+            if datetime.now().hour > 20: awaiting_tweets = True
             print('Waiting until 8 am')
-            sleep(3600)
+            sleep(3600)  # 1h
