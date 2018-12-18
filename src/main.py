@@ -1,7 +1,7 @@
 """ 2018 by Albert Ratajczak
 """
 # General imports
-from os import getenv
+from os import environ
 from datetime import datetime, date, timedelta
 from time import sleep
 from random import choice
@@ -17,10 +17,10 @@ from datetime_functions import date_with_dots, date_of_nearest
 # from api_keys import *
 
 # Twitter's credentials for Heroku
-CONSUMER_KEY = getenv('CONSUMER_KEY', CONSUMER_KEY_LOCAL)
-CONSUMER_SECRET = getenv('CONSUMER_SECRET', CONSUMER_SECRET_LOCAL)
-ACCESS_TOKEN_KEY = getenv('ACCESS_TOKEN_KEY', ACCESS_TOKEN_KEY_LOCAL)
-ACCESS_TOKEN_SECRET = getenv('ACCESS_TOKEN_SECRET', ACCESS_TOKEN_SECRET_LOCAL)
+CONSUMER_KEY = environ.get('CONSUMER_KEY')
+CONSUMER_SECRET = environ.get('CONSUMER_SECRET')
+ACCESS_TOKEN_KEY = environ.get('ACCESS_TOKEN_KEY')
+ACCESS_TOKEN_SECRET = environ.get('ACCESS_TOKEN_SECRET')
 
 
 # Setting Twitter's APIs
