@@ -14,7 +14,7 @@ from eventsstorage import EventsStorage
 from datetime_functions import date_with_dots, date_of_nearest
 
 # Twitter's APIs keys and tokens for running on local mashine
-from api_keys import *
+# from api_keys import *
 
 # Twitter's credentials for Heroku
 CONSUMER_KEY = getenv('CONSUMER_KEY', CONSUMER_KEY_LOCAL)
@@ -98,7 +98,7 @@ def main():
         print(tweet, end='\n'*2)
 
         # Tweeting
-        #twitter.update_status(tweet)
+        twitter.update_status(tweet)
 
         # Removing Tweeted event form the list
         events_to_tweet.remove(tweet_event)
