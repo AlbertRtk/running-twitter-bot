@@ -1,6 +1,7 @@
 """ 2018 by Albert Ratajczak
 """
 # General imports
+from os import getenv
 from datetime import datetime, date, timedelta
 from time import sleep
 from random import choice
@@ -12,8 +13,14 @@ from event import get_events_2
 from eventsstorage import EventsStorage
 from datetime_functions import date_with_dots, date_of_nearest
 
-# Twitter's APIs keys and tokens
+# Twitter's APIs keys and tokens for running on local mashine
 from api_keys import *
+
+# Twitter's credentials for Heroku
+CONSUMER_KEY = getenv('CONSUMER_KEY', CONSUMER_KEY_LOCAL)
+CONSUMER_SECRET = getenv('CONSUMER_SECRET', CONSUMER_SECRET_LOCAL)
+ACCESS_TOKEN_KEY = getenv('ACCESS_TOKEN_KEY', ACCESS_TOKEN_KEY_LOCAL)
+ACCESS_TOKEN_SECRET = getenv('ACCESS_TOKEN_SECRET', ACCESS_TOKEN_SECRET_LOCAL)
 
 
 # Setting Twitter's APIs
@@ -44,9 +51,8 @@ def create_tweet(event):
 
 def main():
     today_date = date.today()
-    # today_day = date(2018, 12, 3)  # for debugging
 
-    # On Sunday, updating database with events
+    # Table is empty or it's Sunday, updating database with events
     if storage.count() == 0 or today_date.isoweekday() == 7:
         update = 0
         while update < 5:
@@ -61,7 +67,6 @@ def main():
 
     # Selecting from database events which are in 8 days
     events_to_tweet = storage.read(today_date+timedelta(days=8))
-    # TODO: test Tweeting about events in one week in advance
 
     # From Sunday to Thursday selecting also few events for next weekend
     if today_date.isoweekday() not in (5, 6):
@@ -93,7 +98,7 @@ def main():
         print(tweet, end='\n'*2)
 
         # Tweeting
-        twitter.update_status(tweet)
+        #twitter.update_status(tweet)
 
         # Removing Tweeted event form the list
         events_to_tweet.remove(tweet_event)

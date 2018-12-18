@@ -66,7 +66,13 @@ class EventsStorage:
         return events
 
     def count(self):
-        return self.cursor.execute('SELECT COUNT(*) FROM races')
+        """
+        Counts events in database
+
+        :return: int, number of rows (events) in the table races
+        """
+        self.cursor.execute('SELECT COUNT(*) FROM races')
+        return self.cursor.fetchone()[0]
 
     def remove(self, event):
         """
