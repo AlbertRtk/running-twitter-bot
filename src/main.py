@@ -47,7 +47,7 @@ def main():
     # today_day = date(2018, 12, 3)  # for debugging
 
     # On Sunday, updating database with events
-    if today_date.isoweekday() == 7:
+    if storage.count() == 0 or today_date.isoweekday() == 7:
         update = 0
         while update < 5:
             try:
@@ -93,7 +93,7 @@ def main():
         print(tweet, end='\n'*2)
 
         # Tweeting
-        #twitter.update_status(tweet)
+        twitter.update_status(tweet)
 
         # Removing Tweeted event form the list
         events_to_tweet.remove(tweet_event)

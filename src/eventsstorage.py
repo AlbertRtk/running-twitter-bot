@@ -65,6 +65,9 @@ class EventsStorage:
                                 row[2], row[3], row[4]))
         return events
 
+    def count(self):
+        return self.cursor.execute('SELECT COUNT(*) FROM races')
+
     def remove(self, event):
         """
         Removes event from table 'races' in database
