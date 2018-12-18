@@ -125,4 +125,4 @@ if __name__ == '__main__':
         else:
             if datetime.now().hour > 20: awaiting_tweets = True
             print('Waiting until 8 am')
-            sleep(3600)  # 1h
+            sleep(24-datetime.now().hour+8)
