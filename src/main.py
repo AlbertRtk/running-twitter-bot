@@ -1,7 +1,7 @@
 """ 2018 by Albert Ratajczak
 """
 # General imports
-from os import environ
+import os
 from datetime import datetime, date, timedelta
 from time import sleep
 from random import choice
@@ -13,14 +13,14 @@ from event import get_events_2
 from eventsstorage import EventsStorage
 from datetime_functions import date_with_dots, date_of_nearest
 
-# Twitter's APIs keys and tokens for running on local mashine
-# from api_keys import *
-
-# Twitter's credentials for Heroku
-CONSUMER_KEY = environ.get('CONSUMER_KEY')
-CONSUMER_SECRET = environ.get('CONSUMER_SECRET')
-ACCESS_TOKEN_KEY = environ.get('ACCESS_TOKEN_KEY')
-ACCESS_TOKEN_SECRET = environ.get('ACCESS_TOKEN_SECRET')
+# Twitter's credentials for running on local mashine (if) and Heroku (else)
+if os.name is 'nt':
+    from api_keys import *
+else:
+    CONSUMER_KEY = os.environ.get('CONSUMER_KEY')
+    CONSUMER_SECRET = os.environ.get('CONSUMER_SECRET')
+    ACCESS_TOKEN_KEY = os.environ.get('ACCESS_TOKEN_KEY')
+    ACCESS_TOKEN_SECRET = os.environ.get('ACCESS_TOKEN_SECRET')
 
 
 # Setting Twitter's APIs
