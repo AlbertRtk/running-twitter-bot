@@ -117,7 +117,7 @@ if __name__ == '__main__':
     print('Starting bot\n')
     awaiting_tweets = True
     while True:
-        if 8 < datetime.now().hour < 21 and awaiting_tweets:
+        if 8 < datetime.now().hour < 20 and awaiting_tweets:
             print('It\'s after 8 am, starting Tweeting\n')
             main()
             awaiting_tweets = False
