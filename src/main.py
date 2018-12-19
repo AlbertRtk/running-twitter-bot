@@ -50,6 +50,9 @@ def create_tweet(event):
 
 
 def main():
+    """
+    :return: boolen, False - no published Tweets, True - Tweets were published
+    """
     today_date = date.today()
 
     # Table is empty or it's Sunday, updating database with events
@@ -82,7 +85,7 @@ def main():
     if number_of_tweets:
         # Calculating the time period (in seconds, at least 60 s) between Tweets
         # (assuming that last Tweet will be posted around 8-9 pm)
-        sleep_time = int(3600*(21-datetime.now().time().hour)/number_of_tweets)
+        sleep_time = int(3600*(20-datetime.now().time().hour)/number_of_tweets)
         if sleep_time < 60: sleep_time = 60
         print('Time interval between Tweets: {}\n'.format(sleep_time))
     else:
@@ -93,7 +96,7 @@ def main():
         # Creating a Tweet
         tweet_event = choice(events_to_tweet)
         tweet = create_tweet(tweet_event)
-        print('='*80)
+        print('* '*5)
         print('\n{0:%H}:{0:%M}:{0:%S}, Tweeting:'.format(datetime.now()))
         print(tweet, end='\n'*2)
 
@@ -112,17 +115,19 @@ def main():
             print('Next Tweet at: {0:%H}:{0:%M}:{0:%S}\n'.format(next_tweet_time))
             sleep(sleep_time)
 
+    return True
+
 
 if __name__ == '__main__':
     print('Starting bot\n')
     awaiting_tweets = True
     while True:
-        if 8 < datetime.now().hour < 20 and awaiting_tweets:
+        if 8 <= datetime.now().hour < 18 and awaiting_tweets:
             print('It\'s after 8 am, starting Tweeting\n')
-            main()
-            awaiting_tweets = False
-            print('\n'+'='*80, end='\n'*2)
+            awaiting_tweets = main()
+            print('\n'+'* '*5, end='\n'*2)
         else:
-            if datetime.now().hour > 20: awaiting_tweets = True
-            print('Waiting until 8 am')
-            sleep((24-datetime.now().hour+8)*3600)
+            waiting_time = 3600 * (24-datetime.now().hour+8)
+            print('Waiting {} s, until it\'s after 8 am'.format(waiting_time))
+            sleep(waiting_time)
+            if awaiting_tweets is False: awaiting_tweets = True
