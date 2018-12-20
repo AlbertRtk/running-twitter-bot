@@ -126,7 +126,7 @@ if __name__ == '__main__':
             awaiting_tweets = False
             print('\n'+'* '*5, end='\n'*2)
         else:
+            awaiting_tweets = True
             waiting_time = 3600 * (24-datetime.now().hour+8)
             print('Waiting {} s, until it\'s after 8 am'.format(waiting_time))
             sleep(waiting_time)
-            if awaiting_tweets is False: awaiting_tweets = True
