@@ -51,7 +51,7 @@ def create_tweet(event):
 
 def main():
     """
-    :return: boolen, False - no published Tweets, True - Tweets were published
+    :return: None
     """
     today_date = date.today()
 
@@ -90,7 +90,7 @@ def main():
         print('Time interval between Tweets: {}\n'.format(sleep_time))
     else:
         print('No Tweet to be published')
-        return False
+        return
 
     while number_of_tweets:
         # Creating a Tweet
@@ -115,8 +115,6 @@ def main():
             print('Next Tweet at: {0:%H}:{0:%M}:{0:%S}\n'.format(next_tweet_time))
             sleep(sleep_time)
 
-    return True
-
 
 if __name__ == '__main__':
     print('Starting bot\n')
@@ -124,7 +122,8 @@ if __name__ == '__main__':
     while True:
         if 8 <= datetime.now().hour < 18 and awaiting_tweets:
             print('It\'s after 8 am, starting Tweeting\n')
-            awaiting_tweets = main()
+            main()
+            awaiting_tweets = False
             print('\n'+'* '*5, end='\n'*2)
         else:
             waiting_time = 3600 * (24-datetime.now().hour+8)
