@@ -1,9 +1,6 @@
 # Running Twitter Bot
 
-Bot Tweeting about upcoming running events in Poland. Written in Python 3 .
-
-- Twitter profile of the bot: [Biegi w Polsce](https://twitter.com/biegi_w_pl)
-- Source of the information about running events: [maratonypolskie.pl](https://www.maratonypolskie.pl/mp_index.php?dzial=3&action=1&grp=13&trgr=1&bieganie)
+Bot Tweeting about upcoming running events in Poland. Written in Python 3. Source of the information about running events: [maratonypolskie.pl](https://www.maratonypolskie.pl/mp_index.php?dzial=3&action=1&grp=13&trgr=1&bieganie)
 
 ### Main Features
 
